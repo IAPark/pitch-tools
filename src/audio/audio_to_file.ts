@@ -6,14 +6,13 @@ export class AudioToFile {
   private analyser = this.audioCtx.createAnalyser();
   private destinationNode = this.audioCtx.createMediaStreamDestination();
   private sourceNode: MediaStreamAudioSourceNode;
-  private pitchDetector: PitchDetector<Float32Array<ArrayBufferLike>>;
-  private timeDomainBuffer;
   private frequencyDomainBuffer: Float32Array;
   public readonly pitchData: {
     pitch: number;
     clarity: number;
     time: number;
   }[] = [];
+  pitchDetector: PitchDetector<Float32Array<ArrayBufferLike>>;
 
   static async fromMicrophone() {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -29,7 +28,6 @@ export class AudioToFile {
   constructor(stream: MediaStream) {
     this.analyser.fftSize = 2048;
     this.pitchDetector = PitchDetector.forFloat32Array(this.analyser.fftSize);
-    this.timeDomainBuffer = new Float32Array(this.analyser.fftSize);
     this.frequencyDomainBuffer = new Float32Array(this.analyser.fftSize);
 
     this.sourceNode = this.audioCtx.createMediaStreamSource(stream);
@@ -67,9 +65,31 @@ export class AudioToFile {
       return [];
     }
     const cleanedData = this.pitchData.filter(
-      (data) => data.pitch < 1000 && data.clarity > 0.75
+      (data) => data.pitch < 1000 && data.pitch > 80 && data.clarity > 0.75
     );
     return cleanedData;
+  }
+
+  public getLastPitch() {
+    return (
+      this.pitchData[this.pitchData.length - 1] || {
+        pitch: 0,
+        clarity: 0,
+        time: 0,
+      }
+    );
+  }
+
+  public averagePitch() {
+    const cleanedData = this.cleanedPitchData();
+    if (cleanedData.length === 0) {
+      return undefined;
+    }
+
+    return (
+      cleanedData.reduce((sum, data) => sum + data.pitch, 0) /
+      cleanedData.length
+    );
   }
 
   public getCurrentFrequencyDomain() {
