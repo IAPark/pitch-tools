@@ -64,8 +64,10 @@ export class AudioToFile {
     if (this.pitchData.length === 0) {
       return [];
     }
-    const cleanedData = this.pitchData.filter(
-      (data) => data.pitch < 1000 && data.pitch > 80 && data.clarity > 0.75
+    const cleanedData = this.pitchData.map((data) =>
+      data.pitch < 1000 && data.pitch > 80 && data.clarity > 0.75
+        ? data
+        : { pitch: null, clarity: 0, time: data.time }
     );
     return cleanedData;
   }
@@ -86,10 +88,12 @@ export class AudioToFile {
       return undefined;
     }
 
-    return (
-      cleanedData.reduce((sum, data) => sum + data.pitch, 0) /
-      cleanedData.length
-    );
+    const pitches = cleanedData.filter((data) => data.pitch !== null);
+
+    if (pitches.length === 0) {
+      return undefined;
+    }
+    return pitches.reduce((sum, data) => sum + data.pitch, 0) / pitches.length;
   }
 
   public getCurrentFrequencyDomain() {

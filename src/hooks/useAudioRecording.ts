@@ -4,7 +4,7 @@ import { AudioToFile } from "../audio/audio_to_file";
 export function useAudioRecording() {
   const [audioToFile, setAudioToFile] = useState<AudioToFile | null>(null);
   const [pitchData, setPitchData] = useState<
-    { pitch: number; time: number; clarity: number }[] | null
+    { pitch: number | null; time: number; clarity: number }[] | null
   >(null);
   const [audioFile, setAudioFile] = useState<Blob | null>(null);
   const [averagePitch, setAveragePitch] = useState<number | null>(null);
