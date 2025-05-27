@@ -1,5 +1,7 @@
 import { PitchDetector } from "pitchy";
 
+import audioWorkletUrl from "./audio_worklet_module?worker&url";
+
 export class AudioToFile {
   private mediaRecorder: MediaRecorder;
   private audioCtx = new AudioContext();
@@ -43,9 +45,7 @@ export class AudioToFile {
   }
 
   public async attachPitch() {
-    await this.audioCtx.audioWorklet.addModule(
-      new URL("./audio_worklet_module.ts", import.meta.url)
-    );
+    await this.audioCtx.audioWorklet.addModule(audioWorkletUrl);
 
     const pitchDetectorNode = new AudioWorkletNode(
       this.audioCtx,
