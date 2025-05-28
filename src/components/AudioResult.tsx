@@ -31,7 +31,7 @@ export default function AudioResult({
   return (
     <>
       {averagePitch && (
-        <div style={{ alignSelf: "left", marginBottom: "20px" }}>
+        <div style={{ alignSelf: "left", margin: "20px 0" }}>
           <a
             href={URL.createObjectURL(audioFile)}
             target="_blank"
