@@ -3,6 +3,7 @@ import {
   LineChart,
   ReferenceArea,
   ReferenceLine,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -30,49 +31,50 @@ export default function AudioResult({
   return (
     <>
       {averagePitch && (
-        <div className="card">
+        <div style={{ alignSelf: "left" }}>
           <p>Average Pitch: {averagePitch.toFixed(2)} Hz</p>
         </div>
       )}
-      <LineChart
-        width={800}
-        height={300}
-        data={pitchData}
-        onClick={(e) => {
-          if (audioRef.current) {
-            setCurrentTime(e.activePayload?.[0]?.payload.time);
-            audioRef.current.audio.current.currentTime =
-              e.activePayload?.[0]?.payload.time || 0;
-          }
-        }}
-      >
-        <XAxis
-          dataKey="time"
-          type="number"
-          tick={false}
-          minTickGap={0}
-          domain={[0, "dataMax"]}
-        />
-        <YAxis
-          domain={[
-            (dataMin: number) => Math.min(dataMin, frequencyTarget - 10),
-            (dataMax: number) => Math.max(dataMax, frequencyTarget + 10),
-          ]}
-          scale="log"
-        />
-        <Tooltip />
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart
+          height={300}
+          data={pitchData}
+          onClick={(e) => {
+            if (audioRef.current) {
+              setCurrentTime(e.activePayload?.[0]?.payload.time);
+              audioRef.current.audio.current.currentTime =
+                e.activePayload?.[0]?.payload.time || 0;
+            }
+          }}
+        >
+          <XAxis
+            dataKey="time"
+            type="number"
+            tick={false}
+            minTickGap={0}
+            domain={[0, "dataMax"]}
+          />
+          <YAxis
+            domain={[
+              (dataMin: number) => Math.min(dataMin, frequencyTarget - 10),
+              (dataMax: number) => Math.max(dataMax, frequencyTarget + 10),
+            ]}
+            scale="log"
+          />
+          <Tooltip />
 
-        <Line dataKey="pitch" stroke="#8884d8" dot={false} />
+          <Line dataKey="pitch" stroke="#8884d8" dot={false} />
 
-        <ReferenceArea
-          y1={frequencyTarget - (frequencyTarget - 440) * 0.02}
-          y2={frequencyTarget + (frequencyTarget - 440) * 0.02}
-          ifOverflow="extendDomain"
-          fill="green"
-          fillOpacity={0.1}
-        />
-        <ReferenceLine x={currentTime} stroke="red" label="Playback time" />
-      </LineChart>
+          <ReferenceArea
+            y1={frequencyTarget - (frequencyTarget - 440) * 0.02}
+            y2={frequencyTarget + (frequencyTarget - 440) * 0.02}
+            ifOverflow="extendDomain"
+            fill="green"
+            fillOpacity={0.1}
+          />
+          <ReferenceLine x={currentTime} stroke="red" label="Playback time" />
+        </LineChart>
+      </ResponsiveContainer>
 
       <BlobPlayer
         blob={audioFile}

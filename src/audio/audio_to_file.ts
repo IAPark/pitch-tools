@@ -21,7 +21,7 @@ export class AudioToFile {
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
-        autoGainControl: true,
+        autoGainControl: false,
       },
     });
     return new AudioToFile(stream);

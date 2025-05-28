@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { PitchGenerator } from "../audio/pitch_generator";
 
-export function PitchGeneratorControl({
+export function Controls({
   onFrequencyChange,
   frequency,
+  isRecording,
+  toggleRecording,
 }: {
   onFrequencyChange: (frequency: number) => void;
   frequency: number;
+  isRecording: boolean;
+  toggleRecording: () => void;
 }) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const generatorRef = useRef<PitchGenerator | null>(null);
@@ -32,13 +36,7 @@ export function PitchGeneratorControl({
 
   const handleTogglePlay = () => {
     if (isPlaying) {
-      // Stop playing
-      if (generatorRef.current) {
-        generatorRef.current.stop();
-        generatorRef.current.dispose();
-        generatorRef.current = null;
-      }
-      setIsPlaying(false);
+      stopPlaying();
     } else {
       // Start playing
       generatorRef.current = new PitchGenerator(frequency);
@@ -47,13 +45,28 @@ export function PitchGeneratorControl({
     }
   };
 
+  const stopPlaying = () => {
+    if (generatorRef.current) {
+      generatorRef.current.stop();
+      generatorRef.current.dispose();
+      generatorRef.current = null;
+      setIsPlaying(false);
+    }
+  };
+
   const handleFrequencyChange = (newFrequency: number) => {
     onFrequencyChange(newFrequency);
   };
 
+  const handleToggleRecord = () => {
+    if (isPlaying && isRecording) {
+      stopPlaying();
+    }
+    toggleRecording();
+  };
+
   return (
     <div className="card">
-      <h3>Pitch Generator</h3>
       <div
         style={{
           display: "flex",
@@ -74,14 +87,14 @@ export function PitchGeneratorControl({
           style={{ width: "100px" }}
         />
       </div>
-      <button onClick={handleTogglePlay}>
-        {isPlaying ? "Stop" : "Start"} Tone
-      </button>
-      {isPlaying && (
-        <p style={{ marginTop: "10px", fontSize: "14px", color: "#666" }}>
-          Playing: {frequency.toFixed(1)} Hz
-        </p>
-      )}
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button onClick={handleTogglePlay}>
+          {isPlaying ? "Stop" : "Start"} Tone
+        </button>
+        <button onClick={handleToggleRecord}>
+          {isRecording ? "Stop" : "Start"} Recording
+        </button>
+      </div>
     </div>
   );
 }

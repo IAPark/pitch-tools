@@ -1,7 +1,5 @@
 import { useState } from "react";
-import "./App.css";
-import { PitchGeneratorControl } from "./components/PitchGeneratorControl";
-import { AudioRecordingControl } from "./components/AudioRecordingControl";
+import { Controls } from "./components/Controls";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import AudioResult from "./components/AudioResult";
 
@@ -13,11 +11,9 @@ function App() {
 
   return (
     <>
-      <PitchGeneratorControl
+      <Controls
         frequency={frequencyTarget}
         onFrequencyChange={setFrequencyTarget}
-      />
-      <AudioRecordingControl
         isRecording={isRecording}
         toggleRecording={toggleRecording}
       />
