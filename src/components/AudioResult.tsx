@@ -31,8 +31,14 @@ export default function AudioResult({
   return (
     <>
       {averagePitch && (
-        <div style={{ alignSelf: "left" }}>
-          <p>Average Pitch: {averagePitch.toFixed(2)} Hz</p>
+        <div style={{ alignSelf: "left", marginBottom: "20px" }}>
+          <a
+            href={URL.createObjectURL(audioFile)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Average Pitch: {averagePitch.toFixed(2)} Hz
+          </a>
         </div>
       )}
       <ResponsiveContainer width="100%" height={300}>
