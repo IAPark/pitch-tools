@@ -39,7 +39,7 @@ export function Controls({
       stopPlaying();
     } else {
       // Start playing
-      generatorRef.current = new PitchGenerator(frequency);
+      generatorRef.current = new PitchGenerator(frequency, 1, 100);
       generatorRef.current.start();
       setIsPlaying(true);
     }
