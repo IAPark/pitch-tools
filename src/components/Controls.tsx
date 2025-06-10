@@ -5,10 +5,14 @@ export function Controls({
   onFrequencyChange,
   frequency,
   isRecording,
+  showDirectionalArrows = false,
+  setShowDirectionalArrows = (_: boolean) => {},
   toggleRecording,
 }: {
   onFrequencyChange: (frequency: number) => void;
   frequency: number;
+  showDirectionalArrows?: boolean;
+  setShowDirectionalArrows?: (showArrows: boolean) => void;
   isRecording: boolean;
   toggleRecording: () => void;
 }) {
@@ -29,10 +33,10 @@ export function Controls({
 
   useEffect(() => {
     // Update frequency in the generator if it's playing
-    if (generatorRef.current && isPlaying) {
+    if (generatorRef.current) {
       generatorRef.current.setFrequency(frequency);
     }
-  }, [frequency, isPlaying]);
+  }, [frequency]);
 
   const handleTogglePlay = () => {
     if (isPlaying) {
@@ -65,6 +69,10 @@ export function Controls({
     toggleRecording();
   };
 
+  const handleToggleShowArrows = () => {
+    setShowDirectionalArrows(!showDirectionalArrows);
+  };
+
   return (
     <div className="card">
       <div
@@ -93,6 +101,9 @@ export function Controls({
         </button>
         <button onClick={handleToggleRecord}>
           {isRecording ? "Stop" : "Start"} Recording
+        </button>
+        <button onClick={handleToggleShowArrows} disabled={!isRecording}>
+          {showDirectionalArrows ? "Hide" : "Show"} Directional Arrows
         </button>
       </div>
     </div>

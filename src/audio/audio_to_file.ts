@@ -37,7 +37,20 @@ export class AudioToFile {
     this.sourceNode.connect(this.analyser);
     this.sourceNode.connect(this.destinationNode);
 
-    this.mediaRecorder = new MediaRecorder(this.destinationNode.stream);
+    const preferredMimeTypes = [
+      "audio/mpeg",
+      "audio/wav",
+      "audio/mp4",
+      "audio/ogg",
+      "audio/webm",
+    ];
+    const mimeType =
+      preferredMimeTypes.find((type) => MediaRecorder.isTypeSupported(type)) ||
+      undefined;
+
+    this.mediaRecorder = new MediaRecorder(this.destinationNode.stream, {
+      mimeType,
+    });
 
     this.mediaRecorder.start();
 
@@ -80,6 +93,26 @@ export class AudioToFile {
         time: 0,
       }
     );
+  }
+
+  public getLastClearPitch(samples: number = 1000) {
+    const clean = this.pitchData.slice(-samples).flatMap((data) => {
+      if (data.pitch < 1000 && data.pitch > 80 && data.clarity > 0.75) {
+        return [data.pitch];
+      } else {
+        return [];
+      }
+    });
+
+    if (clean.length === 0) {
+      return null;
+    } else {
+      return clean.reduce((sum, current) => sum + current, 0) / clean.length;
+    }
+  }
+
+  getFrequencySampleRate() {
+    return this.audioCtx.sampleRate / 2048;
   }
 
   public averagePitch() {
