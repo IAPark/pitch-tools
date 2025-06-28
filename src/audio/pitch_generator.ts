@@ -38,7 +38,7 @@ export class PitchGenerator {
     });
 
     this.setFrequency(this.frequency);
-    this.setVolume(this.volume);
+    this.setVolume(this.volume, 0);
     this.gainNode.connect(this.audioContext.destination);
   }
 
@@ -67,17 +67,22 @@ export class PitchGenerator {
     }
   }
 
-  public setVolume(volume: number): void {
+  public setVolume(volume: number, offset: number = 0.1): void {
     // Volume should be between 0 and 1
     const clampedVolume = Math.max(0, Math.min(1, volume));
 
     const totalVolume = this.volumes.reduce((sum, v) => sum + v, 0);
 
+    const adjustmentTime = this.audioContext.currentTime + offset;
+
     this.nodes.forEach((node, i) => {
-      node.volume = (clampedVolume * this.volumes[i]) / totalVolume;
+      node.setVolume(
+        (clampedVolume * this.volumes[i]) / totalVolume,
+        adjustmentTime
+      );
     });
 
-    this.gainNode.gain.setValueAtTime(1, this.audioContext.currentTime);
+    this.gainNode.gain.setValueAtTime(1, adjustmentTime);
   }
 
   public dispose(): void {
@@ -109,13 +114,14 @@ class HarmonicNode {
   }
 
   set volume(volume: number) {
-    // Volume should be between 0 and 1
-    const clampedVolume = Math.max(0, Math.min(1, volume));
-    this.gainNode.gain.setValueAtTime(
-      clampedVolume,
-      this.gainNode.context.currentTime
-    );
+    this.setVolume(volume, this.gainNode.context.currentTime);
   }
+
+  setVolume(volume: number, time: number): void {
+    const clampedVolume = Math.max(0, Math.min(1, volume));
+    this.gainNode.gain.setValueAtTime(clampedVolume, time);
+  }
+
   get volume(): number {
     return this.gainNode.gain.value;
   }

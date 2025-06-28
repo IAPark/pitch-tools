@@ -17,6 +17,7 @@ export function Controls({
   toggleRecording: () => void;
 }) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(0.8); // Default volume
   const generatorRef = useRef<PitchGenerator | null>(null);
 
   useEffect(() => {
@@ -32,18 +33,23 @@ export function Controls({
   }, []);
 
   useEffect(() => {
-    // Update frequency in the generator if it's playing
     if (generatorRef.current) {
       generatorRef.current.setFrequency(frequency);
     }
   }, [frequency]);
+
+  useEffect(() => {
+    if (generatorRef.current) {
+      generatorRef.current.setVolume(volume);
+    }
+  }, [volume]);
 
   const handleTogglePlay = () => {
     if (isPlaying) {
       stopPlaying();
     } else {
       // Start playing
-      generatorRef.current = new PitchGenerator(frequency, 1, 100);
+      generatorRef.current = new PitchGenerator(frequency, volume, 100);
       generatorRef.current.start();
       setIsPlaying(true);
     }
@@ -94,6 +100,29 @@ export function Controls({
           step="1"
           style={{ width: "100px" }}
         />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          alignItems: "center",
+          marginBottom: "10px",
+        }}
+      >
+        <label htmlFor="volume-slider">Volume:</label>
+        <input
+          id="volume-slider"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          style={{ width: "150px" }}
+        />
+        <span style={{ minWidth: "40px", fontSize: "14px" }}>
+          {Math.round(volume * 100)}%
+        </span>
       </div>
       <div style={{ display: "flex", gap: "10px" }}>
         <button onClick={handleTogglePlay}>
