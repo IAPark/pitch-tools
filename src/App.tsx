@@ -14,6 +14,7 @@ function App() {
     audioFile,
     averagePitch,
     toggleRecording,
+    getFrequencyBuffer,
     isRecording,
     currentFrequency,
   } = useAudioRecording();
@@ -31,6 +32,7 @@ function App() {
       {showDirectionalArrows && isRecording && (
         <DirectionalArrows
           frequency={currentFrequency}
+          getFrequencyBuffer={getFrequencyBuffer}
           target={frequencyTarget}
           affordance={0.02}
         />

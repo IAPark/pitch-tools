@@ -1,13 +1,20 @@
 import { useMemo } from "react";
+import { LivePreview } from "./LivePreview";
 
 interface DirectionalArrowsProps {
   frequency: number | null;
   target: number;
   affordance: number;
+  getFrequencyBuffer: () => {
+    pitch: number;
+    clarity: number;
+    time: number;
+  }[];
 }
 
 export function DirectionalArrows({
   frequency,
+  getFrequencyBuffer,
   target,
   affordance,
 }: DirectionalArrowsProps) {
@@ -86,6 +93,8 @@ export function DirectionalArrows({
       >
         Target: {target.toFixed(1)} Hz
       </div>
+
+      <LivePreview getFrequencyBuffer={getFrequencyBuffer} />
 
       {/* Down Arrow */}
       <div style={getArrowStyle("down")}>↓</div>

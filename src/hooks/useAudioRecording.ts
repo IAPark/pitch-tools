@@ -65,5 +65,8 @@ export function useAudioRecording(updateFrequency: number = 0.1) {
     startRecording,
     stopRecording,
     toggleRecording,
+    getFrequencyBuffer: () => {
+      return audioToFile ? audioToFile.pitchData : [];
+    },
   };
 }
