@@ -36,23 +36,31 @@ export const LivePreview = ({ getFrequencyBuffer }: LivePreviewProps) => {
         currentBuffer[1]?.time - currentBuffer[0]?.time || 1 / 1000;
 
       const toDraw = currentBuffer.slice(-3 / sampleRate);
-      console.log(sampleRate, toDraw.length);
 
       const maxPitch = 600;
       const minPitch = 50;
 
       const points = toDraw.map((data, index) => {
-        const x = index * (width / toDraw.length);
-        const y =
-          height - ((data.pitch - minPitch) / (maxPitch - minPitch)) * height;
+        const x = index / toDraw.length;
+        const y = 1 - (data.pitch - minPitch) / (maxPitch - minPitch);
 
         return [x, y];
       });
 
       ctx.beginPath();
+      ctx.strokeStyle = "#4CAF50";
+      ctx.lineWidth = 4;
       ctx.moveTo(points[0][0], points[0][1]);
-      points.forEach((point) => {
-        ctx.lineTo(point[0], point[1]);
+
+      points.forEach((point, i) => {
+        if (i > 0 && Math.abs(point[1] - points[i - 1]?.[1]) > 0.1) {
+          ctx.strokeStyle = "#4CAF50";
+          ctx.lineWidth = 4;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(point[0] * width, point[1] * height);
+        }
+        ctx.lineTo(point[0] * width, point[1] * height);
       });
       ctx.strokeStyle = "#4CAF50";
       ctx.lineWidth = 4;
@@ -65,7 +73,7 @@ export const LivePreview = ({ getFrequencyBuffer }: LivePreviewProps) => {
         ctx.fillText(
           `${currentBuffer[currentBuffer.length - 1].pitch.toFixed(2)} Hz`,
           width - 10,
-          points[points.length - 1][1] - 10
+          points[points.length - 1][1] * height - 10
         );
       }
 
